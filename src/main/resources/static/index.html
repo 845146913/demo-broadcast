@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>首页</title>
+<script type="text/javascript">
+let webClient = null;
+function initWeb(){
+    var param = window.location.search;
+    webClient = new WebSocket("ws://localhost:8080/ws"+param);
+    webClient.onopen = function(ev){
+        console.log(">>>>>>>> open  ", ev);
+    }
+    webClient.onmessage = function(ev){
+        console.log(">>>>>>>>>>>>>>>收到：", ev.data);
+    }
+    webClient.onclose = function(ev){
+        console.log(">>>>>>>>>>>>>>>>close:", ev)
+    }
+}
+initWeb();
+function sendMsg(){
+    webClient.send("dddddd");
+}
+function sendAdd(){
+    var msg = {
+        msgType:1,
+        roomId:1234
+    };
+    webClient.send(JSON.stringify(msg));
+}
+function sendExit(){
+    var msg = {
+        msgType:2,
+        roomId:1234
+    };
+    webClient.send(JSON.stringify(msg));
+}
+</script>
+</head>
+<body>
+  欢迎》》》》》》
+  <button onclick="sendMsg()">发送</button>
+  <button onclick="sendAdd()">加入</button>
+  <button onclick="sendExit()">退出</button>
+</body>
+</html>
