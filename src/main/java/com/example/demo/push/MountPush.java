@@ -3,6 +3,7 @@ package com.example.demo.push;
 import java.util.Map;
 import java.util.Set;
 
+import com.example.demo.cache.PushCache;
 import com.example.demo.utils.JsonMapper;
 
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MountPush implements Push {
 
     private final MessageSender sender;
+    private final PushCache pushCache;
 
     @Override
     public void dowork(WebSocketSession curSession, TextMessage message) {
@@ -30,19 +32,19 @@ public class MountPush implements Push {
             String roomId = map.get("roomId") + "";
             map.put("fromId", name);
             if (null != msgType && msgType.equals("1")) {
-                SessionCache.putRoom(roomId, curSession);
+                pushCache.putRoom(roomId, curSession);
                 map.put("content", name+"加入房间");
                 String msg = JsonMapper.objToJson(map);
-                Set<WebSocketSession> users = SessionCache.getRoomMapById(roomId);
+                Set<WebSocketSession> users = pushCache.getRoomMapById(roomId);
                 sender.broadcast(users, new TextMessage(msg));
             }
             if (null != msgType && msgType.equals("2")) {
-                if(SessionCache.roomHasUser(roomId, curSession)){
+                if(pushCache.roomHasUser(roomId, curSession)){
                     map.put("content", name+"离开房间");
                     String msg = JsonMapper.objToJson(map);
-                    Set<WebSocketSession> users = SessionCache.getRoomMapById(roomId);
+                    Set<WebSocketSession> users = pushCache.getRoomMapById(roomId);
                     sender.broadcast(users, new TextMessage(msg));
-                    SessionCache.removeRoomByUser(roomId, curSession);
+                    pushCache.removeRoomByUser(roomId, curSession);
                 }
             }
         } else {

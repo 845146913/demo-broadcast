@@ -2,8 +2,8 @@ package com.example.demo.config;
 
 import javax.annotation.Resource;
 
+import com.example.demo.cache.PushCache;
 import com.example.demo.push.MountPush;
-import com.example.demo.push.SessionCache;
 
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -16,19 +16,21 @@ import lombok.extern.slf4j.Slf4j;
 public class SocketMessageHandler extends TextWebSocketHandler {
     @Resource
     MountPush mountPush;
+    @Resource
+    PushCache pushCache;
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 
         log.info("\r\n 关闭连接：{}， status:{}", session.getPrincipal(), status);
-        SessionCache.removeUser(session);
+        pushCache.removeUser(session);
         super.afterConnectionClosed(session, status);
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         log.info("\r\n 建立连接：{}", session.getPrincipal());
-        SessionCache.putUser(session);
+        pushCache.putUser(session);
         super.afterConnectionEstablished(session);
     }
 

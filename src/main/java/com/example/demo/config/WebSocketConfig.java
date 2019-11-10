@@ -1,5 +1,8 @@
 package com.example.demo.config;
 
+import com.example.demo.cache.MemoryPushCache;
+import com.example.demo.cache.PushCache;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -29,6 +32,10 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Bean
     HttpHandshakeHandler httpHandshakHandler(){
         return new HttpHandshakeHandler();
+    }
+    @Bean
+    PushCache pushCache(){
+        return new MemoryPushCache();
     }
 
     @Override
